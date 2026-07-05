@@ -19,32 +19,32 @@
         }
         .card {
             background-color: rgba(20, 29, 43, 0.9); 
-            padding: 35px;
-            border-radius: 12px;
-            border: 1px solid #24344d; 
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            padding: 52.5px; /* 1.5x larger padding */
+            border-radius: 18px; /* 1.5x larger border radius */
+            border: 1.5px solid #24344d; /* 1.5x thicker border */
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4); /* Expanded shadow proportions */
             text-align: center;
-            max-width: 450px;
+            max-width: 675px; /* 1.5x larger width boundary */
             width: 100%;
             z-index: 10;
             position: relative;
-            backdrop-filter: blur(4px); 
+            backdrop-filter: blur(6px); 
         }
         .flag-container {
-            margin-bottom: 25px;
+            margin-bottom: 37.5px; /* 1.5x larger spacing */
         }
         .flag-icon {
-            width: 240px;
+            width: 360px; /* 1.5x larger flag scale dimensions */
             height: auto;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
         }
         h1 {
-            font-size: 2.1rem; 
-            margin: 0 0 10px 0; /* Reduced from 25px to 10px to tighten up the vertical space */
+            font-size: 3.15rem; /* 1.5x larger title scaling */
+            margin: 0 0 15px 0; /* 1.5x larger spacing */
             color: #ffffff;
             font-weight: 700; 
-            letter-spacing: -0.5px;
+            letter-spacing: -0.75px;
         }
         .age-display {
             display: flex;
@@ -53,15 +53,15 @@
             position: relative; 
         }
         .time-unit {
-            font-size: 1.3rem;
+            font-size: 1.95rem; /* 1.5x larger token string typography */
             font-weight: 600;
             color: #e2e8f0;
             background-color: rgba(30, 41, 59, 0.9); 
-            border: 1px solid #334155;  
-            padding: 12px 20px;
-            border-radius: 6px;
+            border: 1.5px solid #334155;  
+            padding: 18px 30px; /* 1.5x larger inner buffer zones */
+            border-radius: 9px;
             width: 85%;
-            height: 32px; 
+            height: 48px; /* 1.5x larger tracking frame box */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -75,48 +75,49 @@
             background-color: #0f172a;
             color: #f8fafc;
             text-align: center;
-            padding: 10px 16px;
-            border-radius: 6px;
-            border: 1px solid #38bdf8;
-            font-size: 0.95rem;
+            padding: 15px 24px; /* 1.5x larger internal canvas pads */
+            border-radius: 9px;
+            border: 1.5px solid #38bdf8;
+            font-size: 1.425rem; /* 1.5x larger tooltip reading scale */
             font-weight: 600;
             white-space: nowrap;
             position: absolute;
             bottom: 125%; 
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
             transition: opacity 0.15s ease, visibility 0.15s ease;
             z-index: 30;
+            pointer-events: none; 
         }
         .tooltip::after {
             content: "";
             position: absolute;
             top: 100%;
             left: 50%;
-            margin-left: -6px;
-            border-width: 6px;
+            margin-left: -9px; /* 1.5x aligned pointer geometry offset */
+            border-width: 9px; /* 1.5x larger pointer size */
             border-style: solid;
             border-color: #38bdf8 transparent transparent transparent;
         }
-        .age-display:hover .tooltip {
+        .time-unit:hover + .tooltip {
             visibility: visible;
             opacity: 1;
         }
         .countdown-container {
-            margin-top: 30px;
-            border-top: 1px solid #24344d;
-            padding-top: 20px;
+            margin-top: 45px; /* 1.5x larger top structure line bridge gap */
+            border-top: 1.5px solid #24344d;
+            padding-top: 30px; /* 1.5x larger padding */
         }
         .countdown-title {
-            font-size: 0.8rem;
+            font-size: 1.2rem; /* 1.5x larger caption */
             color: #94a3b8;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
             text-transform: uppercase;
         }
         .countdown-ticker {
-            font-size: 1.1rem;
+            font-size: 1.65rem; /* 1.5x larger running ticker digits */
             font-weight: 700;
             color: #38bdf8; 
             font-family: monospace;
@@ -135,14 +136,14 @@
             display: none;
             background: linear-gradient(135deg, #b22234 0%, #3c3b6e 100%);
             color: white;
-            padding: 14px;
-            border-radius: 6px;
-            margin-bottom: 25px;
-            font-size: 1.25rem;
+            padding: 21px; /* 1.5x larger padding */
+            border-radius: 9px;
+            margin-bottom: 37.5px; /* 1.5x larger margin layout block */
+            font-size: 1.875rem; /* 1.5x larger textual announcement metrics */
             font-weight: bold;
             animation: pulse 2s infinite;
-            border: 1px solid #475569;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            border: 1.5px solid #475569;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.4);
         }
         .version-tag {
             position: absolute;
@@ -208,7 +209,7 @@
         </div>
     </div>
 
-    <div class="version-tag">v20</div>
+    <div class="version-tag">v22</div>
 
     <script>
         const targetBox = document.getElementById('yearBox');
