@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA Age Tracker & Celebration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0f17; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #f8fafc;
+            overflow: hidden;
+            position: relative;
+        }
+        .card {
+            background-color: rgba(20, 29, 43, 0.9); 
+            padding: 35px;
+            border-radius: 12px;
+            border: 1px solid #24344d; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            z-index: 10;
+            position: relative;
+            backdrop-filter: blur(4px); 
+        }
+        .flag-container {
+            margin-bottom: 25px;
+        }
+        .flag-icon {
+            width: 240px;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 1.6rem;
+            margin: 0 0 30px 0;
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .age-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .time-unit {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            background-color: rgba(30, 41, 59, 0.9); 
+            border: 1px solid #334155;  
+            padding: 12px 20px;
+            border-radius: 6px;
+            width: 85%;
+            height: 32px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap; 
+        }
+        .countdown-container {
+            margin-top: 30px;
+            border-top: 1px solid #24344d;
+            padding-top: 20px;
+        }
+        .countdown-title {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .countdown-ticker {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #38bdf8; 
+            font-family: monospace;
+        }
+        #fireworksCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15; 
+            display: none;
+        }
+        .celebration-banner {
+            display: none;
+            background: linear-gradient(135deg, #b22234 0%, #3c3b6e 100%);
+            color: white;
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+            border: 1px solid #475569;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .version-tag {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            color: #22c55e; 
+            font-family: monospace;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 20;
+            user-select: none;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <div class="card">
+        <div class="flag-container">
+            <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 741 390">
+                <rect width="741" height="390" fill="#b22234"/>
+                <path d="M0 30h741M0 90h741M0 150h741M0 210h741M0 270h741M0 330h741" stroke="#fff" stroke-width="30"/>
+                <rect width="296.4" height="210" fill="#3c3b6e"/>
+                <g fill="#fff">
+                    <g id="two">
+                        <g id="five">
+                            <g id="one">
+                                <polygon points="24.7,15 27.8,24.5 35.8,24.5 29.3,29.2 31.8,38.7 24.7,33.9 17.6,38.7 20.1,29.2 13.6,24.5 21.6,24.5"/>
+                            </g>
+                            <use href="#one" x="49.4"/>
+                            <use href="#one" x="98.8"/>
+                            <use href="#one" x="148.2"/>
+                            <use href="#one" x="197.6"/>
+                        </g>
+                        <use href="#five" x="24.7" y="21"/>
+                    </g>
+                    <use href="#two" y="42"/>
+                    <use href="#two" y="84"/>
+                    <use href="#two" y="126"/>
+                    <use href="#five" y="168"/>
+                </g>
+            </svg>
+        </div>
+        <div id="celebrationBanner" class="celebration-banner"></div>
+        <h1>USA Age Tracker</h1>
+        
+        <div class="age-display">
+            <div id="yearBox" class="time-unit"></div>
+        </div>
+
+        <div class="countdown-container">
+            <div class="countdown-title">4th of July Countdown</div>
+            <div id="countdownTicker" class="countdown-ticker">00d : 00h : 00m : 00s</div>
+        </div>
+    </div>
+
+    <div class="version-tag">v16</div>
+
+    <script>
+        let isHovered = false;
+        const targetBox = document.getElementById('yearBox');
+        
+        targetBox.addEventListener('mouseenter', () => { isHovered = true; updateUSAAgeAndCountdown(); });
+        targetBox.addEventListener('mouseleave', () => { isHovered = false; updateUSAAgeAndCountdown(); });
+
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function updateUSAAgeAndCountdown() {
+            const birthDate = new Date(1776, 6, 4); 
+            const now = new Date();
+
+            let years = now.getFullYear() - birthDate.getFullYear();
+            let months = now.getMonth() - birthDate.getMonth();
+            let days = now.getDate() - birthDate.getDate();
+
+            if (days < 0) {
+                months--;
+                let prevMonthYear = now.getFullYear();
+                let prevMonth = now.getMonth() - 1;
+                if (prevMonth < 0) {
+                    prevMonth = 11;
+                    prevMonthYear--;
+                }
+                days += getDaysInMonth(prevMonthYear, prevMonth);
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            const weeks = Math.floor(days / 7);
+            const remainingDays = days % 7;
+
+            const isSolidYearCount = (months === 0 && weeks === 0 && remainingDays === 0);
+
+            const banner = document.getElementById('celebrationBanner');
+            if (isSolidYearCount) {
+                banner.textContent = `🎆 Happy 4th of July! 🎆`;
+                banner.style.display = 'block';
+                startFireworks();
+            } else {
+                banner.style.display = 'none';
+                stopFireworks();
+            }
+
+            function formatUnit(value, unitName) {
+                if (value === 0) return null;
+                return `${value} ${unitName}${value === 1 ? '' : 's'}`;
+            }
+
+            const yearStr = `${years} year${years === 1 ? '' : 's'}${isSolidYearCount ? '!' : ''}`;
+
+            const detailParts = [
+                formatUnit(months, 'month'),
+                formatUnit(weeks, 'week'),
+                formatUnit(remainingDays, 'day')
+            ].filter(unit => unit !== null);
+
+            if (isHovered) {
+                if (detailParts.length > 0) {
+                    let completeAgeStr = yearStr;
+                    
+                    if (detailParts.length === 1) {
+                        completeAgeStr += `, and ${detailParts[0]}`;
+                    } else if (detailParts.length === 2) {
+                        completeAgeStr += `, ${detailParts[0]}, and ${detailParts[1]}`;
+                    } else if (detailParts.length === 3) {
+                        completeAgeStr += `, ${detailParts[0]}, ${detailParts[1]}, and ${detailParts[2]}`;
+                    }
+
+                    targetBox.textContent = completeAgeStr;
+                    targetBox.style.fontSize = "0.90rem"; 
+                } else {
+                    targetBox.textContent = yearStr;
+                    targetBox.style.fontSize = "1.3rem";
+                }
+            } else {
+                targetBox.textContent = yearStr;
+                targetBox.style.fontSize = "1.3rem";
+            }
+
+            let targetYear = now.getFullYear();
+            if (now.getMonth() > 6 || (now.getMonth() === 6 && now.getDate() >= 5)) {
+                targetYear++;
+            }
+            const next4th = new Date(targetYear, 6, 4, 0, 0, 0);
+            const diffTime = next4th - now;
+
+            if (diffTime <= 0) {
+                document.getElementById('countdownTicker').textContent = "00d : 00h : 00m : 00s";
+            } else {
+                const cDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const cHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const cMins = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+                const cSecs = Math.floor((diffTime % (1000 * 60)) / 1000);
+
+                const pad = num => String(num).padStart(2, '0');
+                document.getElementById('countdownTicker').textContent = 
+                    `${pad(cDays)}d : ${pad(cHours)}h : ${pad(cMins)}m : ${pad(cSecs)}s`;
+            }
+        }
+
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let fireworksTimeoutId;
+        let animationFrameId;
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 2.2 + 0.8;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 1.5;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 0.9;
+                this.decay = Math.random() * 0.012 + 0.008;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.035; 
+                this.alpha -= this.decay;
+            }
+        }
+
+        function triggerFireworkBatch() {
+            const concurrentBursts = Math.floor(Math.random() * 4) + 1;
+            
+            for (let b = 0; b < concurrentBursts; b++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                
+                const colors = ['#b22234', '#ffffff', '#3c3b6e', '#38bdf8', '#fbbf24'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                const particleCount = Math.floor(Math.random() * 35) + 30;
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            const randomDelay = Math.random() * 600 + 300;
+            fireworksTimeoutId = setTimeout(triggerFireworkBatch, randomDelay);
+        }
+
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let index = particles.length - 1; index >= 0; index--) {
+                const particle = particles[index];
+                if (particle.alpha <= 0) {
+                    particles.splice(index, 1);
+                } else {
+                    particle.update();
+                    particle.draw();
+                }
+            }
+            animationFrameId = requestAnimationFrame(animateFireworks);
+        }
+
+        function startFireworks() {
+            canvas.style.display = 'block';
+            resizeCanvas();
+            if (!fireworksTimeoutId) {
+                triggerFireworkBatch();
+                animateFireworks();
+            }
+        }
+
+        function stopFireworks() {
+            canvas.style.display = 'none';
+            clearTimeout(fireworksTimeoutId);
+            cancelAnimationFrame(animationFrameId);
+            fireworksTimeoutId = null;
+            particles = [];
+        }
+
+        updateUSAAgeAndCountdown();
+        setInterval(updateUSAAgeAndCountdown, 1000); 
+    </script>
+</body>
+</html>
