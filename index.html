@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA Age Tracker</title>
+    <title>USA Age Tracker & Celebration</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -284,7 +284,7 @@
             const weeks = Math.floor(days / 7);
             const remainingDays = days % 7;
 
-            // Check if today is exactly the 4th of July (Month index 6 is July)
+            // Reverted back to checking if today is exactly the 4th of July (Month index 6 is July)
             const isJuly4th = (now.getMonth() === 6 && now.getDate() === 4);
 
             const banner = document.getElementById('celebrationBanner');
@@ -303,7 +303,6 @@
             }
 
             const mainYearStr = `${years} year${years === 1 ? '' : 's'}!`;
-            // If it's July 4th, we display an exclamation on the tooltip setup too
             const tooltipYearStr = `${years} year${years === 1 ? '' : 's'}${isJuly4th ? '!' : ''}`;
 
             const detailParts = [
