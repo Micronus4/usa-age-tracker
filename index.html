@@ -167,7 +167,6 @@
             transform: translateX(-50%) translateY(0);
         }
         
-        /* Adjusted margin-bottom to pull the container up slightly */
         .countdown-container {
             text-align: center;
             margin-bottom: 12px; 
@@ -248,7 +247,7 @@
         </div>
     </div>
 
-    <div class="version-tag">v39</div>
+    <div class="version-tag">v40</div>
 
     <script>
         const targetBox = document.getElementById('yearBox');
@@ -285,10 +284,11 @@
             const weeks = Math.floor(days / 7);
             const remainingDays = days % 7;
 
-            const isSolidYearCount = (months === 0 && weeks === 0 && remainingDays === 0);
+            // Check if today is exactly the 4th of July (Month index 6 is July)
+            const isJuly4th = (now.getMonth() === 6 && now.getDate() === 4);
 
             const banner = document.getElementById('celebrationBanner');
-            if (isSolidYearCount) {
+            if (isJuly4th) {
                 banner.textContent = `🎆 Happy 4th of July! 🎆`;
                 banner.style.display = 'block';
                 startFireworks();
@@ -303,7 +303,8 @@
             }
 
             const mainYearStr = `${years} year${years === 1 ? '' : 's'}!`;
-            const tooltipYearStr = `${years} year${years === 1 ? '' : 's'}${isSolidYearCount ? '!' : ''}`;
+            // If it's July 4th, we display an exclamation on the tooltip setup too
+            const tooltipYearStr = `${years} year${years === 1 ? '' : 's'}${isJuly4th ? '!' : ''}`;
 
             const detailParts = [
                 formatUnit(months, 'month'),
@@ -325,7 +326,8 @@
                 tooltipBox.textContent = completeAgeStr;
                 tooltipBox.style.display = 'block';
             } else {
-                tooltipBox.style.display = 'none';
+                tooltipBox.textContent = tooltipYearStr;
+                tooltipBox.style.display = 'block';
             }
 
             let targetYear = now.getFullYear();
@@ -335,7 +337,7 @@
             const next4th = new Date(targetYear, 6, 4, 0, 0, 0);
             const diffTime = next4th - now;
 
-            if (diffTime <= 0) {
+            if (diffTime <= 0 || isJuly4th) {
                 document.getElementById('countdownTicker').textContent = "00d : 00h : 00m : 00s";
             } else {
                 const cDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
