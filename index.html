@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA Age Tracker & Celebration</title>
+    <title>USA Age Tracker</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -247,7 +247,7 @@
         </div>
     </div>
 
-    <div class="version-tag">v42</div>
+    <div class="version-tag">v43</div>
 
     <script>
         const targetBox = document.getElementById('yearBox');
@@ -358,17 +358,78 @@
         let animationFrameId;
         let particles = [];
 
+        // Redesigned with higher resolution 5x5 matrices to give a bold, stylized, modern digital font look
         const digitBlueprints = {
-            '0': [[1,1,1],[1,0,1],[1,0,1],[1,0,1],[1,1,1]],
-            '1': [[0,1,0],[0,1,0],[0,1,0],[0,1,0],[0,1,0]],
-            '2': [[1,1,1],[0,0,1],[1,1,1],[1,0,0],[1,1,1]],
-            '3': [[1,1,1],[0,0,1],[1,1,1],[0,0,1],[1,1,1]],
-            '4': [[1,0,1],[1,0,1],[1,1,1],[0,0,1],[0,0,1]],
-            '5': [[1,1,1],[1,0,0],[1,1,1],[0,0,1],[1,1,1]],
-            '6': [[1,1,1],[1,0,0],[1,1,1],[1,0,1],[1,1,1]],
-            '7': [[1,1,1],[0,0,1],[0,1,0],[0,1,0],[0,1,0]],
-            '8': [[1,1,1],[1,0,1],[1,1,1],[1,0,1],[1,1,1]],
-            '9': [[1,1,1],[1,0,1],[1,1,1],[0,0,1],[1,1,1]]
+            '0': [
+                [1,1,1,1,1],
+                [1,1,0,1,1],
+                [1,1,0,1,1],
+                [1,1,0,1,1],
+                [1,1,1,1,1]
+            ],
+            '1': [
+                [0,0,1,1,0],
+                [0,1,1,1,0],
+                [0,0,1,1,0],
+                [0,0,1,1,0],
+                [1,1,1,1,1]
+            ],
+            '2': [
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [1,1,1,1,1],
+                [1,1,0,0,0],
+                [1,1,1,1,1]
+            ],
+            '3': [
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [1,1,1,1,1]
+            ],
+            '4': [
+                [1,1,0,1,1],
+                [1,1,0,1,1],
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [0,0,0,1,1]
+            ],
+            '5': [
+                [1,1,1,1,1],
+                [1,1,0,0,0],
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [1,1,1,1,1]
+            ],
+            '6': [
+                [1,1,1,1,1],
+                [1,1,0,0,0],
+                [1,1,1,1,1],
+                [1,1,0,1,1],
+                [1,1,1,1,1]
+            ],
+            '7': [
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [0,0,1,1,0],
+                [0,1,1,0,0],
+                [0,1,1,0,0]
+            ],
+            '8': [
+                [1,1,1,1,1],
+                [1,1,0,1,1],
+                [1,1,1,1,1],
+                [1,1,0,1,1],
+                [1,1,1,1,1]
+            ],
+            '9': [
+                [1,1,1,1,1],
+                [1,1,0,1,1],
+                [1,1,1,1,1],
+                [0,0,0,1,1],
+                [1,1,1,1,1]
+            ]
         };
 
         function resizeCanvas() {
@@ -382,12 +443,13 @@
                 this.x = x;
                 this.y = y;
                 this.color = color;
+                this.isTextParticle = isTextParticle;
                 
                 // Make the anniversary explosions (the ones that state the anniversary number) large enough, clear enough, and long enough to process and read.
                 if (isTextParticle) {
-                    this.radius = Math.random() * 2.5 + 2.0; 
+                    this.radius = Math.random() * 2.0 + 3.5; // Bold particle size
                     this.alpha = 1.0;
-                    this.decay = Math.random() * 0.003 + 0.003; 
+                    this.decay = Math.random() * 0.002 + 0.002; // Very slow decay for enhanced readability time
                 } else {
                     this.radius = Math.random() * 2.2 + 0.8;
                     this.alpha = 0.9;
@@ -410,23 +472,37 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
+                
+                if (this.isTextParticle) {
+                    // Stylized neon-like drop glow around each bold text element block
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = this.color;
+                }
+                
                 ctx.fill();
                 ctx.restore();
             }
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy += 0.015; 
+                
+                if (this.isTextParticle) {
+                    this.vy += 0.006; // Microgravity floating drift effect
+                } else {
+                    this.vy += 0.035; 
+                }
+                
                 this.alpha -= this.decay;
             }
         }
 
         function createNumberFirework(startX, startY, targetNumber, color) {
             const numStr = String(targetNumber);
-            const gridSpacing = 12.0; 
-            const letterSpacing = 45; 
+            const gridSpacing = 14.0; // Scaled structural grid for large presentation sizing
+            const letterSpacing = 55; // Wide proportional gap
+            const cols = 5; 
             
-            const totalWidth = (numStr.length * 3 * gridSpacing) + ((numStr.length - 1) * letterSpacing);
+            const totalWidth = (numStr.length * cols * gridSpacing) + ((numStr.length - 1) * letterSpacing);
             let offsetCurrentX = startX - totalWidth / 2;
 
             for (let i = 0; i < numStr.length; i++) {
@@ -439,14 +515,15 @@
                             const ptX = offsetCurrentX + (c * gridSpacing);
                             const ptY = startY + (r * gridSpacing);
                             
-                            const velX = (ptX - startX) * 0.08 + (Math.random() * 0.3 - 0.15);
-                            const velY = (ptY - startY) * 0.08 + (Math.random() * 0.3 - 0.15);
+                            // Controlled expansion logic giving numbers a crisp, uniform push outwards
+                            const velX = (ptX - startX) * 0.05 + (Math.random() * 0.2 - 0.1);
+                            const velY = (ptY - startY) * 0.05 + (Math.random() * 0.2 - 0.1);
                             
                             particles.push(new Particle(startX, startY, color, { x: velX, y: velY }, true));
                         }
                     }
                 }
-                offsetCurrentX += (3 * gridSpacing) + letterSpacing;
+                offsetCurrentX += (cols * gridSpacing) + letterSpacing;
             }
         }
 
@@ -458,11 +535,13 @@
                 const x = b === 0 && triggerTextBurst ? canvas.width / 2 : Math.random() * canvas.width;
                 const y = b === 0 && triggerTextBurst ? canvas.height * 0.35 : Math.random() * (canvas.height * 0.65) + (canvas.height * 0.1);
                 
-                const colors = ['#b22234', '#ffffff', '#3c3b6e', '#38bdf8', '#fbbf24'];
+                const colors = ['#e11d48', '#ffffff', '#3b82f6', '#38bdf8', '#fbbf24'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 
                 if (b === 0 && triggerTextBurst) {
-                    createNumberFirework(x, y, currentUSAAge, '#38bdf8'); 
+                    // Alternate vibrant gold and turquoise colors for stylized variety
+                    const luxuryColor = Math.random() < 0.5 ? '#fbbf24' : '#22d3ee';
+                    createNumberFirework(x, y, currentUSAAge, luxuryColor); 
                 } else {
                     const particleCount = Math.floor(Math.random() * 35) + 30;
                     for (let i = 0; i < particleCount; i++) {
