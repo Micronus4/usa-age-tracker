@@ -33,13 +33,13 @@
             width: 100%;
             height: 480px; 
             z-index: 10;
-            backdrop-filter: blur(12px); 
             overflow: hidden; 
             box-sizing: border-box;
             
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: background 0.15s ease-out;
         }
 
         /* Ambient glow inside the card matching the aesthetic */
@@ -55,7 +55,7 @@
             z-index: -1;
         }
 
-        /* Faint American Flag background sourced from Wikipedia */
+        /* American Flag background made slightly brighter for visibility */
         .card::before {
             content: "";
             position: absolute;
@@ -64,7 +64,7 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            opacity: 0.05; 
+            opacity: 0.18; /* Retained brighter background flag setting */
             pointer-events: none;
             background-image: url('https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg');
             background-size: cover;
@@ -78,7 +78,7 @@
             color: #ffffff;
             font-weight: 800; 
             letter-spacing: -1px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
 
@@ -93,7 +93,7 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            z-index: 20;
+            z-index: 25; 
         }
         
         .time-unit {
@@ -101,8 +101,8 @@
             font-weight: 700; 
             font-style: italic; 
             color: #ffffff;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.12);  
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.16);  
             padding: 14px 28px; 
             border-radius: 14px;
             width: 68%; 
@@ -115,17 +115,17 @@
             cursor: pointer;
             box-sizing: border-box; 
             box-shadow: 
-                0 4px 6px -1px rgba(0, 0, 0, 0.2), 
-                0 2px 4px -1px rgba(0, 0, 0, 0.1),
+                0 4px 6px -1px rgba(0, 0, 0, 0.3), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.2),
                 0 0 12px rgba(56, 189, 248, 0.05);
             transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .time-unit:hover {
             transform: scale(1.025);
-            border-color: rgba(56, 189, 248, 0.4);
+            border-color: rgba(56, 189, 248, 0.5);
             box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.3),
+                0 10px 15px -3px rgba(0, 0, 0, 0.4),
                 0 0 15px rgba(56, 189, 248, 0.2);
         }
         
@@ -170,21 +170,24 @@
         .countdown-container {
             text-align: center;
             margin-bottom: 12px; 
+            position: relative;
+            z-index: 25;
         }
         .countdown-title {
             font-size: 1.1rem; 
-            color: #64748b;
+            color: #94a3b8; 
             letter-spacing: 2px;
             margin-bottom: 14px;
             text-transform: uppercase;
             font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .countdown-ticker {
             font-size: 1.8rem; 
             font-weight: 700;
             color: #38bdf8; 
             font-family: monospace;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3), 0 2px 4px rgba(0,0,0,0.5);
         }
         #fireworksCanvas {
             position: absolute;
@@ -193,7 +196,8 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 15; 
+            /* Retained z-index 12: Permits overlapping over the card frame (10) but sits underneath text structure (25) */
+            z-index: 12; 
             display: none;
         }
         .celebration-banner {
@@ -207,7 +211,7 @@
             font-weight: bold;
             animation: pulse 2s infinite;
             border: 1px solid #475569;
-            text-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
         }
         .version-tag {
             position: absolute;
@@ -232,8 +236,8 @@
 
     <canvas id="fireworksCanvas"></canvas>
 
-    <div class="card">
-        <h1>USA Age Tracker</h1>
+    <div class="card" id="mainCard">
+        <h1 style="position: relative; z-index: 25;">USA Age Tracker</h1>
         
         <div class="age-display">
             <div id="yearBox" class="time-unit"></div>
@@ -247,11 +251,12 @@
         </div>
     </div>
 
-    <div class="version-tag">v46</div>
+    <div class="version-tag">v54</div>
 
     <script>
         const targetBox = document.getElementById('yearBox');
         const tooltipBox = document.getElementById('ageTooltip');
+        const mainCard = document.getElementById('mainCard');
         let currentUSAAge = 250; 
         let isTabActive = true;
 
@@ -261,7 +266,9 @@
 
         function updateUSAAgeAndCountdown() {
             const birthDate = new Date(1776, 6, 4); 
-            const now = new Date(); // Reverted safely to use system runtime environment parameters
+            
+            // TRUE CLOCK REVERTED: Directly tracks the running system date and year again
+            const now = new Date(); 
 
             let years = now.getFullYear() - birthDate.getFullYear();
             let months = now.getMonth() - birthDate.getMonth();
@@ -288,6 +295,7 @@
 
             currentUSAAge = years; 
 
+            // TRUE LOGIC REVERTED: Triggers condition checking solely when date accurately lands on July 4th
             const isJuly4th = (now.getMonth() === 6 && now.getDate() === 4);
 
             const banner = document.getElementById('celebrationBanner');
@@ -358,78 +366,20 @@
         let fireworksTimeoutId;
         let animationFrameId;
         let particles = [];
+        let ambientFlashIntensity = 0;
+        let flashColor = 'rgba(255,255,255,0)';
 
         const digitBlueprints = {
-            '0': [
-                [0,1,1,1,0],
-                [1,1,0,1,1],
-                [1,1,0,1,1],
-                [1,1,0,1,1],
-                [0,1,1,1,0]
-            ],
-            '1': [
-                [0,0,1,1,0],
-                [0,1,1,1,0],
-                [0,0,1,1,0],
-                [0,0,1,1,0],
-                [1,1,1,1,1]
-            ],
-            '2': [
-                [0,1,1,1,0],
-                [1,1,0,1,1],
-                [0,0,1,1,0],
-                [0,1,1,0,0],
-                [1,1,1,1,1]
-            ],
-            '3': [
-                [1,1,1,1,0],
-                [0,0,0,1,1],
-                [0,1,1,1,0],
-                [0,0,0,1,1],
-                [1,1,1,1,0]
-            ],
-            '4': [
-                [1,1,0,1,1],
-                [1,1,0,1,1],
-                [1,1,1,1,1],
-                [0,0,0,1,1],
-                [0,0,0,1,1]
-            ],
-            '5': [
-                [1,1,1,1,1],
-                [1,1,0,0,0],
-                [1,1,1,1,0],
-                [0,0,0,1,1],
-                [1,1,1,1,0]
-            ],
-            '6': [
-                [0,1,1,1,0],
-                [1,1,0,0,0],
-                [1,1,1,1,0],
-                [1,1,0,1,1],
-                [0,1,1,1,0]
-            ],
-            '7': [
-                [1,1,1,1,1],
-                [0,0,0,1,1],
-                [0,0,1,1,0],
-                [0,1,1,0,0],
-                [0,1,1,0,0]
-            ],
-            '8': [
-                [0,1,1,1,0],
-                [1,1,0,1,1],
-                [0,1,1,1,0],
-                [1,1,0,1,1],
-                [0,1,1,1,0]
-            ],
-            '9': [
-                [0,1,1,1,0],
-                [1,1,0,1,1],
-                [0,1,1,1,1],
-                [0,0,0,1,1],
-                [0,1,1,1,0]
-            ]
+            '0': [[0,1,1,1,0],[1,1,0,1,1],[1,1,0,1,1],[1,1,0,1,1],[0,1,1,1,0]],
+            '1': [[0,0,1,1,0],[0,1,1,1,0],[0,0,1,1,0],[0,0,1,1,0],[1,1,1,1,1]],
+            '2': [[0,1,1,1,0],[1,1,0,1,1],[0,0,1,1,0],[0,1,1,0,0],[1,1,1,1,1]],
+            '3': [[1,1,1,1,0],[0,0,0,1,1],[0,1,1,1,0],[0,0,0,1,1],[1,1,1,1,0]],
+            '4': [[1,1,0,1,1],[1,1,0,1,1],[1,1,1,1,1],[0,0,0,1,1],[0,0,0,1,1]],
+            '5': [[1,1,1,1,1],[1,1,0,0,0],[1,1,1,1,0],[0,0,0,1,1],[1,1,1,1,0]],
+            '6': [[0,1,1,1,0],[1,1,0,0,0],[1,1,1,1,0],[1,1,0,1,1],[0,1,1,1,0]],
+            '7': [[1,1,1,1,1],[0,0,0,1,1],[0,0,1,1,0],[0,1,1,0,0],[0,1,1,0,0]],
+            '8': [[0,1,1,1,0],[1,1,0,1,1],[0,1,1,1,0],[1,1,0,1,1],[0,1,1,1,0]],
+            '9': [[0,1,1,1,0],[1,1,0,1,1],[0,1,1,1,1],[0,0,0,1,1],[0,1,1,1,0]]
         };
 
         function resizeCanvas() {
@@ -444,15 +394,17 @@
                 this.y = y;
                 this.color = color;
                 this.isTextParticle = isTextParticle;
+                this.drag = Math.random() * 0.015 + 0.965; 
                 
                 if (isTextParticle) {
-                    this.radius = (Math.random() * 2.5 + 4.0) * (scaleFactor * 0.75); 
+                    this.radius = (Math.random() * 1.8 + 2.5) * (scaleFactor * 0.75); 
                     this.alpha = 1.0;
-                    this.decay = Math.random() * 0.0015 + 0.0015; 
+                    // Extended lifespan logic retained for the true version code
+                    this.decay = Math.random() * 0.0003 + 0.00045; 
                 } else {
-                    this.radius = Math.random() * 2.8 + 1.0;
-                    this.alpha = 0.95;
-                    this.decay = Math.random() * 0.01 + 0.006;
+                    this.radius = Math.random() * 2.0 + 1.0;
+                    this.alpha = 0.95; 
+                    this.decay = Math.random() * 0.006 + 0.005; 
                 }
                 
                 if (customVelocity) {
@@ -460,7 +412,7 @@
                     this.vy = customVelocity.y;
                 } else {
                     const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 6.5 + 2.0;
+                    const speed = Math.random() * 4.0 + 1.2; 
                     this.vx = Math.cos(angle) * speed;
                     this.vy = Math.sin(angle) * speed;
                 }
@@ -473,10 +425,10 @@
                 ctx.fillStyle = this.color;
                 
                 if (this.isTextParticle) {
-                    ctx.shadowBlur = 16;
+                    ctx.shadowBlur = 15;
                     ctx.shadowColor = this.color;
                 } else {
-                    ctx.shadowBlur = 5;
+                    ctx.shadowBlur = 6;
                     ctx.shadowColor = this.color;
                 }
                 
@@ -484,28 +436,47 @@
                 ctx.restore();
             }
             update() {
+                this.vx *= this.drag;
+                this.vy *= this.drag;
                 this.x += this.vx;
                 this.y += this.vy;
                 
                 if (this.isTextParticle) {
-                    this.vy += 0.005; 
+                    this.vy += 0.001; 
                 } else {
-                    this.vy += 0.038; 
+                    this.vy += 0.022; 
                 }
                 
                 this.alpha -= this.decay;
             }
         }
 
+        function hexToRgbA(hex, alpha) {
+            let c;
+            if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+                c= hex.substring(1).split('');
+                if(c.length== 3){
+                    c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+                }
+                c= '0x'+c.join('');
+                return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
+            }
+            return 'rgba(255,255,255,'+alpha+')';
+        }
+
         function createNumberFirework(startX, startY, targetNumber, color) {
             const numStr = String(targetNumber);
-            const scaleFactor = Math.random() * 0.7 + 0.8; 
-            const gridSpacing = 14.0 * scaleFactor; 
-            const letterSpacing = 55 * scaleFactor; 
+            // Varied scale sizing logic preserved
+            const scaleFactor = Math.random() * 0.4 + 0.5; 
+            const gridSpacing = 13.0 * scaleFactor; 
+            const letterSpacing = 50 * scaleFactor; 
             const cols = 5; 
             
             const totalWidth = (numStr.length * cols * gridSpacing) + ((numStr.length - 1) * letterSpacing);
             let offsetCurrentX = startX - totalWidth / 2;
+
+            ambientFlashIntensity = 0.2; 
+            flashColor = hexToRgbA(color, 0.05);
 
             for (let i = 0; i < numStr.length; i++) {
                 const digit = numStr[i];
@@ -517,8 +488,8 @@
                             const ptX = offsetCurrentX + (c * gridSpacing);
                             const ptY = startY + (r * gridSpacing);
                             
-                            const velX = (ptX - startX) * 0.055 + (Math.random() * 0.25 - 0.125);
-                            const velY = (ptY - startY) * 0.055 + (Math.random() * 0.25 - 0.125);
+                            const velX = (ptX - startX) * 0.042 + (Math.random() * 0.16 - 0.08);
+                            const velY = (ptY - startY) * 0.042 + (Math.random() * 0.16 - 0.08);
                             
                             particles.push(new Particle(startX, startY, color, { x: velX, y: velY }, true, scaleFactor));
                         }
@@ -531,21 +502,33 @@
         function triggerFireworkBatch() {
             if (!isTabActive) return;
 
-            // Permanent Upgrade: Significantly more concurrent bursts and greater positional spread randomized across the screen landscape
             const concurrentBursts = Math.floor(Math.random() * 4) + 3; 
-            const triggerTextBurst = Math.random() < 0.45;
+            const triggerTextBurst = Math.random() < 0.4;
 
             for (let b = 0; b < concurrentBursts; b++) {
-                const x = Math.random() * (canvas.width * 0.84) + (canvas.width * 0.08);
-                const y = Math.random() * (canvas.height * 0.55) + (canvas.height * 0.1);
+                let x;
+                if (Math.random() < 0.5) {
+                    x = Math.random() * (canvas.width * 0.32) + (canvas.width * 0.03); 
+                } else {
+                    x = Math.random() * (canvas.width * 0.32) + (canvas.width * 0.65);  
+                }
+                const y = Math.random() * (canvas.height * 0.55) + (canvas.height * 0.06);
                 
-                const colors = ['#e11d48', '#ffffff', '#3b82f6', '#38bdf8', '#fbbf24', '#c084fc', '#2dd4bf'];
+                const colors = ['#e11d48', '#ffffff', '#3b82f6', '#38bdf8', '#fbbf24', '#d946ef', '#14b8a6'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 
                 if (b === 0 && triggerTextBurst) {
                     const luxuryColor = Math.random() < 0.5 ? '#fbbf24' : '#22d3ee';
-                    createNumberFirework(x, y, currentUSAAge, luxuryColor); 
+                    // Dynamic positioning variant logic preserved
+                    const randomTextX = Math.random() * (canvas.width * 0.5) + (canvas.width * 0.25);
+                    const randomTextY = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.1);
+                    createNumberFirework(randomTextX, randomTextY, currentUSAAge, luxuryColor); 
                 } else {
+                    if (Math.random() < 0.5) {
+                        ambientFlashIntensity = Math.min(ambientFlashIntensity + 0.2, 0.4);
+                        flashColor = hexToRgbA(color, 0.05);
+                    }
+                    
                     const particleCount = Math.floor(Math.random() * 40) + 35; 
                     for (let i = 0; i < particleCount; i++) {
                         particles.push(new Particle(x, y, color, null, false));
@@ -553,15 +536,18 @@
                 }
             }
 
-            const randomDelay = Math.random() * 450 + 250; 
+            const randomDelay = Math.random() * 800 + 450; 
             fireworksTimeoutId = setTimeout(triggerFireworkBatch, randomDelay);
         }
 
         function animateFireworks() {
             if (!isTabActive) return;
 
+            // Clean layout rendering clear loop preserved (No trails mud block artifacting)
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
+            // SMOKE MECHANICS REMOVED PERMANENTLY
+
             for (let index = particles.length - 1; index >= 0; index--) {
                 const particle = particles[index];
                 if (particle.alpha <= 0) {
@@ -571,6 +557,23 @@
                     particle.draw();
                 }
             }
+
+            if (ambientFlashIntensity > 0) {
+                ctx.save();
+                ctx.fillStyle = flashColor;
+                ctx.globalAlpha = ambientFlashIntensity;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+                
+                mainCard.style.boxShadow = `0 0 30px ${flashColor}, 0 10px 30px -10px rgba(0, 0, 0, 0.7)`;
+                ambientFlashIntensity -= 0.035; 
+            } else {
+                mainCard.style.boxShadow = `
+                    0 0 1px 1px rgba(255, 255, 255, 0.1) inset,
+                    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+                    0 40px 80px -15px rgba(0, 0, 0, 0.6)`;
+            }
+
             animationFrameId = requestAnimationFrame(animateFireworks);
         }
 
@@ -589,16 +592,17 @@
             cancelAnimationFrame(animationFrameId);
             fireworksTimeoutId = null;
             particles = [];
+            ambientFlashIntensity = 0;
         }
 
-        // Tab Visibility listener infrastructure to pause background processing and mitigate potential tab buffering/lagging
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 isTabActive = false;
                 clearTimeout(fireworksTimeoutId);
                 cancelAnimationFrame(animationFrameId);
                 fireworksTimeoutId = null;
-                particles = []; // Clear buffered items to completely guarantee a lag-free tab restoration experience
+                particles = []; 
+                ambientFlashIntensity = 0;
             } else {
                 isTabActive = true;
                 const now = new Date();
