@@ -247,12 +247,12 @@
         </div>
     </div>
 
-    <div class="version-tag">v41</div>
+    <div class="version-tag">v42</div>
 
     <script>
         const targetBox = document.getElementById('yearBox');
         const tooltipBox = document.getElementById('ageTooltip');
-        let currentUSAAge = 250; // Dynamic cache container for particle system evaluation
+        let currentUSAAge = 250; 
 
         function getDaysInMonth(year, month) {
             return new Date(year, month + 1, 0).getDate();
@@ -285,7 +285,7 @@
             const weeks = Math.floor(days / 7);
             const remainingDays = days % 7;
 
-            currentUSAAge = years; // Sync system wide
+            currentUSAAge = years; 
 
             const isJuly4th = (now.getMonth() === 6 && now.getDate() === 4);
 
@@ -358,7 +358,6 @@
         let animationFrameId;
         let particles = [];
 
-        // Internal font digit matrices mappings for custom shaped explosions
         const digitBlueprints = {
             '0': [[1,1,1],[1,0,1],[1,0,1],[1,0,1],[1,1,1]],
             '1': [[0,1,0],[0,1,0],[0,1,0],[0,1,0],[0,1,0]],
@@ -379,11 +378,21 @@
         window.addEventListener('resize', resizeCanvas);
 
         class Particle {
-            constructor(x, y, color, customVelocity = null) {
+            constructor(x, y, color, customVelocity = null, isTextParticle = false) {
                 this.x = x;
                 this.y = y;
                 this.color = color;
-                this.radius = Math.random() * 2.2 + 0.8;
+                
+                // Make the anniversary explosions (the ones that state the anniversary number) large enough, clear enough, and long enough to process and read.
+                if (isTextParticle) {
+                    this.radius = Math.random() * 2.5 + 2.0; 
+                    this.alpha = 1.0;
+                    this.decay = Math.random() * 0.003 + 0.003; 
+                } else {
+                    this.radius = Math.random() * 2.2 + 0.8;
+                    this.alpha = 0.9;
+                    this.decay = Math.random() * 0.012 + 0.008;
+                }
                 
                 if (customVelocity) {
                     this.vx = customVelocity.x;
@@ -394,9 +403,6 @@
                     this.vx = Math.cos(angle) * speed;
                     this.vy = Math.sin(angle) * speed;
                 }
-                
-                this.alpha = 0.9;
-                this.decay = Math.random() * 0.012 + 0.008;
             }
             draw() {
                 ctx.save();
@@ -410,15 +416,15 @@
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy += 0.035; 
+                this.vy += 0.015; 
                 this.alpha -= this.decay;
             }
         }
 
         function createNumberFirework(startX, startY, targetNumber, color) {
             const numStr = String(targetNumber);
-            const gridSpacing = 5.5; 
-            const letterSpacing = 28; 
+            const gridSpacing = 12.0; 
+            const letterSpacing = 45; 
             
             const totalWidth = (numStr.length * 3 * gridSpacing) + ((numStr.length - 1) * letterSpacing);
             let offsetCurrentX = startX - totalWidth / 2;
@@ -433,11 +439,10 @@
                             const ptX = offsetCurrentX + (c * gridSpacing);
                             const ptY = startY + (r * gridSpacing);
                             
-                            // Vector projection pushing points outwards structural-wise from center point
-                            const velX = (ptX - startX) * 0.16 + (Math.random() * 0.7 - 0.3);
-                            const velY = (ptY - startY) * 0.16 + (Math.random() * 0.7 - 0.3);
+                            const velX = (ptX - startX) * 0.08 + (Math.random() * 0.3 - 0.15);
+                            const velY = (ptY - startY) * 0.08 + (Math.random() * 0.3 - 0.15);
                             
-                            particles.push(new Particle(startX, startY, color, { x: velX, y: velY }));
+                            particles.push(new Particle(startX, startY, color, { x: velX, y: velY }, true));
                         }
                     }
                 }
@@ -446,29 +451,27 @@
         }
 
         function triggerFireworkBatch() {
-            const concurrentBursts = Math.floor(Math.random() * 4) + 1;
-            
-            // 30% chance that an explosion transforms into the custom live age number
-            const triggerTextBurst = Math.random() < 0.3;
+            const concurrentBursts = Math.floor(Math.random() * 3) + 1;
+            const triggerTextBurst = Math.random() < 0.4;
 
             for (let b = 0; b < concurrentBursts; b++) {
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * (canvas.height * 0.65) + (canvas.height * 0.1);
+                const x = b === 0 && triggerTextBurst ? canvas.width / 2 : Math.random() * canvas.width;
+                const y = b === 0 && triggerTextBurst ? canvas.height * 0.35 : Math.random() * (canvas.height * 0.65) + (canvas.height * 0.1);
                 
                 const colors = ['#b22234', '#ffffff', '#3c3b6e', '#38bdf8', '#fbbf24'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 
                 if (b === 0 && triggerTextBurst) {
-                    createNumberFirework(x, y, currentUSAAge, color);
+                    createNumberFirework(x, y, currentUSAAge, '#38bdf8'); 
                 } else {
                     const particleCount = Math.floor(Math.random() * 35) + 30;
                     for (let i = 0; i < particleCount; i++) {
-                        particles.push(new Particle(x, y, color));
+                        particles.push(new Particle(x, y, color, null, false));
                     }
                 }
             }
 
-            const randomDelay = Math.random() * 600 + 300;
+            const randomDelay = Math.random() * 700 + 400;
             fireworksTimeoutId = setTimeout(triggerFireworkBatch, randomDelay);
         }
 
