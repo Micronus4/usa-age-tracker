@@ -64,7 +64,7 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            opacity: 0.24; /* FIXED: Increased opacity slightly from 0.18 to 0.24 for a subtle brightness boost */
+            opacity: 0.24; 
             pointer-events: none;
             background-image: url('https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg');
             background-size: cover;
@@ -265,6 +265,8 @@
 
         function updateUSAAgeAndCountdown() {
             const birthDate = new Date(1776, 6, 4); 
+            
+            // TRUE CLOCK REVERTED: Now directly evaluates real running system metrics again
             const now = new Date(); 
 
             let years = now.getFullYear() - birthDate.getFullYear();
@@ -292,6 +294,7 @@
 
             currentUSAAge = years; 
 
+            // TRUE LOGIC REVERTED: Fires exclusively when calendar syncs cleanly to July 4th
             const isJuly4th = (now.getMonth() === 6 && now.getDate() === 4);
 
             const banner = document.getElementById('celebrationBanner');
