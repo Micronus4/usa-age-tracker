@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA Age Tracker</title>
+    <title>4th of July Countdown</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -64,7 +64,7 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            opacity: 0.18; /* Retained brighter background flag setting */
+            opacity: 0.18; 
             pointer-events: none;
             background-image: url('https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg');
             background-size: cover;
@@ -196,7 +196,6 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            /* Retained z-index 12: Permits overlapping over the card frame (10) but sits underneath text structure (25) */
             z-index: 12; 
             display: none;
         }
@@ -237,7 +236,7 @@
     <canvas id="fireworksCanvas"></canvas>
 
     <div class="card" id="mainCard">
-        <h1 style="position: relative; z-index: 25;">USA Age Tracker</h1>
+        <h1 style="position: relative; z-index: 25;">4th of July Countdown</h1>
         
         <div class="age-display">
             <div id="yearBox" class="time-unit"></div>
@@ -266,8 +265,6 @@
 
         function updateUSAAgeAndCountdown() {
             const birthDate = new Date(1776, 6, 4); 
-            
-            // TRUE CLOCK REVERTED: Directly tracks the running system date and year again
             const now = new Date(); 
 
             let years = now.getFullYear() - birthDate.getFullYear();
@@ -295,7 +292,6 @@
 
             currentUSAAge = years; 
 
-            // TRUE LOGIC REVERTED: Triggers condition checking solely when date accurately lands on July 4th
             const isJuly4th = (now.getMonth() === 6 && now.getDate() === 4);
 
             const banner = document.getElementById('celebrationBanner');
@@ -399,7 +395,6 @@
                 if (isTextParticle) {
                     this.radius = (Math.random() * 1.8 + 2.5) * (scaleFactor * 0.75); 
                     this.alpha = 1.0;
-                    // Extended lifespan logic retained for the true version code
                     this.decay = Math.random() * 0.0003 + 0.00045; 
                 } else {
                     this.radius = Math.random() * 2.0 + 1.0;
@@ -466,7 +461,6 @@
 
         function createNumberFirework(startX, startY, targetNumber, color) {
             const numStr = String(targetNumber);
-            // Varied scale sizing logic preserved
             const scaleFactor = Math.random() * 0.4 + 0.5; 
             const gridSpacing = 13.0 * scaleFactor; 
             const letterSpacing = 50 * scaleFactor; 
@@ -519,7 +513,6 @@
                 
                 if (b === 0 && triggerTextBurst) {
                     const luxuryColor = Math.random() < 0.5 ? '#fbbf24' : '#22d3ee';
-                    // Dynamic positioning variant logic preserved
                     const randomTextX = Math.random() * (canvas.width * 0.5) + (canvas.width * 0.25);
                     const randomTextY = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.1);
                     createNumberFirework(randomTextX, randomTextY, currentUSAAge, luxuryColor); 
@@ -543,10 +536,7 @@
         function animateFireworks() {
             if (!isTabActive) return;
 
-            // Clean layout rendering clear loop preserved (No trails mud block artifacting)
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // SMOKE MECHANICS REMOVED PERMANENTLY
 
             for (let index = particles.length - 1; index >= 0; index--) {
                 const particle = particles[index];
